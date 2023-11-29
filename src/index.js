@@ -76,8 +76,35 @@ function addRamen()
             comment: commentInput.value
         }
 
-        ramenCopy.push(newRamen)
-        createNavBar(ramenCopy)
+        // Replaced the 2 lines below with the POST request so this persists through refreshes
+        // ramenCopy.push(newRamen)
+        // createNavBar(ramenCopy)
+
+        fetch(url, 
+        {
+            method: "POST",
+            headers: 
+            {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newRamen)
+        })
+        .then(resp => 
+            {
+                if(resp.ok === true)
+                {
+                    resp.json().then(newRamen => 
+                        {
+                            ramenCopy.push(newRamen)
+                            createNavBar(ramenCopy)
+                        })
+                }
+
+                else 
+                {
+                    alert("Error: Unable to add new ramen!")
+                }
+            })
 
         newRamenForm.reset()
     })
@@ -120,13 +147,13 @@ function deleteRamen()
 
     deleteButton.addEventListener("click", () => 
     {
-        for(let i = 0; i < ramenCopy.length(); i++)
-        {
-            if (ramenCopy[i] === currentRamen)
-            {
+        // for(let i = 0; i < ramenCopy.length(); i++)
+        // {
+        //     if (ramenCopy[i] === currentRamen)
+        //     {
                 
-            }
-        }
+        //     }
+        // }
         // ramenCopy.forEach(ramen => 
         // {
         //     if(ramen.name !== currentRamen.name && !ramenCopy2.includes(currentRamen))
@@ -137,8 +164,8 @@ function deleteRamen()
         //     else if (ramen.name === currentRamen.name)
         // })
 
-        createNavBar(ramenCopy2)
-        displayDetails(ramenCopy2[0])
+        // createNavBar(ramenCopy2)
+        // displayDetails(ramenCopy2[0])
     })
 }
 
