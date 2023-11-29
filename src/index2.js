@@ -13,9 +13,14 @@ const nameInput = document.querySelector("form#new-ramen input#new-name")
 const restInput = document.querySelector("form#new-ramen input#new-restaurant")
 const imgInput = document.querySelector("form#new-ramen input#new-image")
 const ratingInput = document.querySelector("form#new-ramen input#new-rating")
-const commentInput = document.querySelector("form#new-ramen input#new-rating")
+const commentInput = document.querySelector("form#new-ramen textarea#new-comment")
+
+const editForm = document.querySelector("#edit-ramen")
+const updatedRating = document.querySelector("form#edit-ramen input#new-rating")
+const updatedComment = document.querySelector("form#edit-ramen textarea#new-comment")
 
 let ramenCopy
+let currentRamen
 
 function getRamen()
 {
@@ -27,6 +32,8 @@ function getRamen()
                 createNavBar(ramenData)
                 displayDetails(ramenData[0])
                 addRamen()
+                updateRamen()
+                deleteRamen()
             })
 }
 
@@ -45,6 +52,8 @@ function createNavBar(ramens)
 
 function displayDetails(ramen)
 {
+    currentRamen = ramen
+
     detailImg.src = ramen.image
     detailName.innerText = ramen.name
     detailRest.innerText = ramen.restaurant
@@ -71,6 +80,56 @@ function addRamen()
         createNavBar(ramenCopy)
 
         newRamenForm.reset()
+    })
+}
+
+function updateRamen()
+{
+    editForm.addEventListener("submit", (e) => 
+    {
+        e.preventDefault()
+
+        currentRamen.rating = updatedRating.value
+        currentRamen.comment = updatedComment.value
+
+        ramenCopy.forEach(ramen => 
+            {
+                if(currentRamen.name === ramen.name)
+                {
+                    ramen.rating = updatedRating.value
+                    ramen.comment = updatedComment.value
+                }
+            })
+
+        createNavBar(ramenCopy)
+        displayDetails(currentRamen)
+
+        editForm.reset()
+    })
+}
+
+function deleteRamen()
+{
+    const deleteButton = document.createElement("input")
+    deleteButton.type = "submit"
+    deleteButton.value = "Delete Ramen"
+    deleteButton.style.background = "#DB1200"
+    document.body.appendChild(deleteButton)
+    const ramenCopy2 = []
+
+
+    deleteButton.addEventListener("click", () => 
+    {
+        ramenCopy.forEach(ramen => 
+        {
+            if(ramen.name !== currentRamen.name && !ramenCopy2.includes(currentRamen))
+            {
+                ramenCopy2.push(ramen)
+            }
+        })
+
+        createNavBar(ramenCopy2)
+        displayDetails(ramenCopy2[0])
     })
 }
 
