@@ -97,6 +97,7 @@ function addRamen()
                         {
                             ramenCopy.push(newRamen)
                             createNavBar(ramenCopy)
+                            displayDetails(newRamen)
                         })
                 }
 
@@ -116,20 +117,54 @@ function updateRamen()
     {
         e.preventDefault()
 
-        currentRamen.rating = updatedRating.value
-        currentRamen.comment = updatedComment.value
+        // Patch code replaces lines 120-133 which makes it persist through refreshes
+        // currentRamen.rating = updatedRating.value
+        // currentRamen.comment = updatedComment.value
 
-        ramenCopy.forEach(ramen => 
+        // ramenCopy.forEach(ramen => 
+        //     {
+        //         if(currentRamen.name === ramen.name)
+        //         {
+        //             ramen.rating = updatedRating.value
+        //             ramen.comment = updatedComment.value
+        //         }
+        //     })
+
+        // createNavBar(ramenCopy)
+        // displayDetails(currentRamen)
+
+        fetch(`${url}/${currentRamen.id}`,
+        {
+            method: "PATCH",
+            headers: 
             {
-                if(currentRamen.name === ramen.name)
-                {
-                    ramen.rating = updatedRating.value
-                    ramen.comment = updatedComment.value
-                }
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(
+            {
+                rating: updatedRating.value,
+                comment: updatedComment.value
             })
+        })
+        .then(resp => resp.json())
+        .then(updatedRamen => 
+            {
+                ramenCopy = ramenCopy.map(ramen =>
+                    {
+                        if(ramen.name === updatedRamen.name)
+                        {
+                            return updatedRamen
+                        }
 
-        createNavBar(ramenCopy)
-        displayDetails(currentRamen)
+                        else
+                        {
+                            return ramen
+                        }
+                    })
+
+                displayDetails(updatedRamen)
+                createNavBar(ramenCopy)
+            })
 
         editForm.reset()
     })
@@ -147,25 +182,28 @@ function deleteRamen()
 
     deleteButton.addEventListener("click", () => 
     {
-        // for(let i = 0; i < ramenCopy.length(); i++)
-        // {
-        //     if (ramenCopy[i] === currentRamen)
-        //     {
-                
-        //     }
-        // }
-        // ramenCopy.forEach(ramen => 
-        // {
-        //     if(ramen.name !== currentRamen.name && !ramenCopy2.includes(currentRamen))
-        //     {
-        //         ramenCopy2.push(ramen)
-        //     }
+        fetch(`${url}/${currentRamen.id}`, 
+        {
+            method: "DELETE"
+        })
+        .then(resp => 
+            {
+                if(resp.ok)
+                {
+                    ramenCopy = ramenCopy.filter(ramen => 
+                        {
+                            return currentRamen.id !== ramen.id
+                        })
+                    displayDetails(ramenCopy[0])
+                    createNavBar(ramenCopy)
+                    alert("Ramen deleted!")
+                }
 
-        //     else if (ramen.name === currentRamen.name)
-        // })
-
-        // createNavBar(ramenCopy2)
-        // displayDetails(ramenCopy2[0])
+                else
+                {
+                    alert("Error: Unable to delete ramen!")
+                }
+            })
     })
 }
 
